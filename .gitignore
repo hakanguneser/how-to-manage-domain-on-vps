@@ -1,0 +1,10 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore real configs containing secrets
+*.local
+*.secret
+nginx/sites-available/
+nginx/sites-enabled/
+.env
