@@ -93,38 +93,4 @@ Secure access to sensitive dashboards (Portainer, Swagger, Grafana, pgAdmin, etc
    - **Include:** Email → *your email*
 
 Only authenticated users (OTP login) can access the panel.
-
----
-
-# 📂 Repository Structure
-
 ```
-nginx/
-  └── templates/
-        reverse-proxy.conf     # Reusable Nginx template
-
-docs/
-  setup-guide.md               # Detailed documentation
-  zero-trust.md                # Zero Trust setup steps
-```
-
----
-
-# 🧱 Template: reverse-proxy.conf
-
-```nginx
-server {
-    listen 80;
-    server_name my-app.com;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-
----
