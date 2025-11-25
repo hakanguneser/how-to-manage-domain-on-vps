@@ -1,81 +1,130 @@
-# 🌐 How to Manage Domains on VPS (Nginx + Cloudflare)
+# 🌐 VPS Domain Management (Nginx + Cloudflare)
 
-A practical guide and template collection for hosting web applications on a VPS (Ubuntu) using **Nginx** as a Reverse Proxy and **Cloudflare** for DNS & Security.
+A clean and modular guide for hosting applications on a VPS using **Nginx Reverse Proxy** and **Cloudflare DNS + Zero Trust**.
 
-## 🎯 Goal
-To easily connect domains and subdomains to specific ports on a VPS while securing sensitive admin panels (like Portainer, Swagger, Databases) using Cloudflare Zero Trust.
+This repository includes ready-to-use templates and best practices for secure and maintainable domain management.
+
+---
+
+## 🚀 Features
+- 🟧 Cloudflare-proxied subdomain routing  
+- 🔁 Nginx Reverse Proxy configuration templates  
+- 🔒 Cloudflare Zero Trust protection for admin panels  
+- 📦 Modular templates and folder structure  
+- 🌍 Supports multiple apps/domains on the same VPS  
+
+---
 
 ## 🏗️ Architecture
-* **Infrastructure:** VPS (Ubuntu 20.04/22.04/24.04)
-* **Web Server:** Nginx (Reverse Proxy)
-* **DNS & Security:** Cloudflare (Flexible SSL)
-* **Access Control:** Cloudflare Zero Trust
+
+| Component | Purpose |
+|----------|---------|
+| **VPS (Ubuntu)** | Host applications and reverse proxies |
+| **Nginx** | Reverse proxy + routing |
+| **Cloudflare** | DNS, SSL, security |
+| **Zero Trust** | Access control for admin panels |
 
 ---
 
-## 🚀 Quick Start
+# 📥 Installation
 
-### 1. Setup Nginx
-First, install Nginx on your VPS:
-\\\Bash
+## 1) Install Nginx
+
+```bash
 sudo apt update && sudo apt install nginx -y
-\\\
-
-### 2. Create a New Domain Config
-Use the provided template to create a new configuration file for your domain/subdomain.
-
-1.  Copy the template:
-    \\\bash
-    sudo cp nginx/templates/reverse-proxy.conf /etc/nginx/sites-available/my-app.com
-    \\\
-
-2.  Edit the file:
-    \\\bash
-    sudo nano /etc/nginx/sites-available/my-app.com
-    \\\
-    *Change \server_name\ to your domain and \proxy_pass\ to your app's port.*
-
-3.  Activate the site:
-    \\\Bash
-    sudo ln -s /etc/nginx/sites-available/my-app.com /etc/nginx/sites-enabled/
-    \\\
-
-4.  Test and Restart Nginx:
-    \\\Bash
-    sudo nginx -t
-    sudo systemctl restart nginx
-    \\\
-
-### 3. Setup DNS (Cloudflare)
-Go to Cloudflare Dashboard -> **DNS** and add an **A Record**:
-
-| Type | Name | Content (IPv4) | Proxy Status |
-| :--- | :--- | :--- | :--- |
-| **A** | \subdomain\ | \YOUR_VPS_IP\ | ✅ Proxied |
-
-> **⚠️ Important:** Ensure your Cloudflare SSL/TLS mode is set to **Flexible**.
+```
 
 ---
 
-## 🛡️ Security: Cloudflare Zero Trust
+# ⚙️ Configure a Domain / Subdomain
 
-To protect admin panels (like Portainer or Swagger UI) from public access:
+## 2) Create Reverse Proxy Config
 
-1.  Go to **Cloudflare Zero Trust** -> **Access** -> **Applications**.
-2.  Add a **Self-hosted** application.
-3.  Enter your **Subdomain** and **Domain**.
-4.  Create a **Policy**:
-    * **Action:** Allow
-    * **Include:** Selector \Email\ -> Value \your-email@example.com\
+### 1. Copy template
+```bash
+sudo cp nginx/templates/reverse-proxy.conf /etc/nginx/sites-available/my-app.com
+```
 
-Now, only you can access the dashboard via email OTP.
+### 2. Edit config
+```bash
+sudo nano /etc/nginx/sites-available/my-app.com
+```
+
+Modify:
+
+- `server_name` → your domain  
+- `proxy_pass` → your app port (e.g., http://localhost:3000)
+
+### 3. Enable the site
+```bash
+sudo ln -s /etc/nginx/sites-available/my-app.com /etc/nginx/sites-enabled/
+```
+
+### 4. Test & restart Nginx
+```bash
+sudo nginx -t
+sudo systemctl restart nginx
+```
 
 ---
 
-## 📂 Repository Structure
-* \
-ginx/templates/\ - Ready-to-use configuration files.
-* \docs/\ - Detailed step-by-step guides.
+# 🌩️ Cloudflare DNS Setup
 
-## 🤝 Contributing
-Feel free to open a Pull Request to improve the configurations!
+Go to **Cloudflare → DNS** and add:
+
+| Type | Name | IPv4 Address | Proxy |
+|------|------|--------------|--------|
+| A | subdomain | YOUR_VPS_IP | Proxied (orange) |
+
+> **SSL/TLS Mode:** `Flexible`
+
+---
+
+# 🛡️ Cloudflare Zero Trust Protection
+
+Secure access to sensitive dashboards (Portainer, Swagger, Grafana, pgAdmin, etc.).
+
+### Steps:
+1. Cloudflare Zero Trust → **Access → Applications**
+2. Click **Add Application → Self-hosted**
+3. Enter domain or subdomain
+4. Create a policy:
+   - **Action:** Allow  
+   - **Include:** Email → *your email*
+
+Only authenticated users (OTP login) can access the panel.
+
+---
+
+# 📂 Repository Structure
+
+```
+nginx/
+  └── templates/
+        reverse-proxy.conf     # Reusable Nginx template
+
+docs/
+  setup-guide.md               # Detailed documentation
+  zero-trust.md                # Zero Trust setup steps
+```
+
+---
+
+# 🧱 Template: reverse-proxy.conf
+
+```nginx
+server {
+    listen 80;
+    server_name my-app.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+---
