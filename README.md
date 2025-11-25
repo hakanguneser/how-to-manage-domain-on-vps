@@ -25,12 +25,12 @@ sudo apt update && sudo apt install nginx -y
 Use the provided template to create a new configuration file for your domain/subdomain.
 
 1.  Copy the template:
-    \\\Bash
+    \\\bash
     sudo cp nginx/templates/reverse-proxy.conf /etc/nginx/sites-available/my-app.com
     \\\
 
 2.  Edit the file:
-    \\\Bash
+    \\\bash
     sudo nano /etc/nginx/sites-available/my-app.com
     \\\
     *Change \server_name\ to your domain and \proxy_pass\ to your app's port.*
