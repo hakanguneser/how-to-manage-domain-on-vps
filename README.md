@@ -17,7 +17,7 @@ To easily connect domains and subdomains to specific ports on a VPS while securi
 
 ### 1. Setup Nginx
 First, install Nginx on your VPS:
-\\\ash
+\\\Bash
 sudo apt update && sudo apt install nginx -y
 \\\
 
@@ -25,23 +25,23 @@ sudo apt update && sudo apt install nginx -y
 Use the provided template to create a new configuration file for your domain/subdomain.
 
 1.  Copy the template:
-    \\\ash
+    \\\Bash
     sudo cp nginx/templates/reverse-proxy.conf /etc/nginx/sites-available/my-app.com
     \\\
 
 2.  Edit the file:
-    \\\ash
+    \\\Bash
     sudo nano /etc/nginx/sites-available/my-app.com
     \\\
     *Change \server_name\ to your domain and \proxy_pass\ to your app's port.*
 
 3.  Activate the site:
-    \\\ash
+    \\\Bash
     sudo ln -s /etc/nginx/sites-available/my-app.com /etc/nginx/sites-enabled/
     \\\
 
 4.  Test and Restart Nginx:
-    \\\ash
+    \\\Bash
     sudo nginx -t
     sudo systemctl restart nginx
     \\\
